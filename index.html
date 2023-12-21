@@ -73,6 +73,15 @@
 								<script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.16.1/numjs.min.js" integrity="sha512-OSMx44HuCHhy3eXrRbRpRX47stz3U4WITFjPlznK4rxqQQM0nj4lK6u0UcyaCQcWTUNUDKHCLHoLqwmEwygE9w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 								<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js" integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 								<script >
+									if ('serviceWorker' in navigator) {
+									    navigator.serviceWorker.register('/service-worker.js')
+									        .then(function(registration) {
+									            console.log('Service Worker 注册成功:', registration);
+									        })
+									        .catch(function(error) {
+									            console.log('Service Worker 注册失败:', error);
+									        });
+									}
 
 									let myChart = null
 									Array.prototype.sum = function () {
