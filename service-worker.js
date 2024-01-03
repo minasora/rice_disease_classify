@@ -1,30 +1,34 @@
-var CACHE_NAME = 'my-site-cache-v1';
-self.addEventListener('install', (event) => {
-    console.log('Service Worker 安装');
+const addResourcesToCache = async (resources) => {
+  const cache = await caches.open("v1");
+  await cache.addAll(resources);
+};
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    addResourcesToCache([
+      "/",
+      "/index.html",
+     "/model.onnx,
+    ]),
+  );
+});
+const putInCache = async (request, response) => {
+  const cache = await caches.open("v1");
+  await cache.put(request, response);
+};
+
+const cacheFirst = async (request) => {
+  const responseFromCache = await caches.match(request);
+  if (responseFromCache) {
+    return responseFromCache;
+  }
+  const responseFromNetwork = await fetch(request);
+  putInCache(request, responseFromNetwork.clone());
+  return responseFromNetwork;
+};
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(cacheFirst(event.request));
 });
 
-self.addEventListener('fetch', function(event) {
-    event.respondWith(
-        caches.match(event.request)
-            .then(function(response) {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request).then(function(response) {
-                    if(!response || response.status !== 200 || response.type !== 'basic') {
-                        return response;
-                    }
-
-                    var responseToCache = response.clone();
-
-                    caches.open(CACHE_NAME)
-                        .then(function(cache) {
-                            cache.put(event.request, responseToCache);
-                        });
-
-                    return response;
-                });
-            })
-    );
-});
 
