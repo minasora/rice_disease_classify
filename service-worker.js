@@ -1,3 +1,4 @@
+var CACHE_NAME = 'my-site-cache-v1';
 self.addEventListener('install', (event) => {
     console.log('Service Worker 安装');
 });
