@@ -1,34 +1,33 @@
-const addResourcesToCache = async (resources) => {
-  const cache = await caches.open("v1");
-  await cache.addAll(resources);
-};
+var CACHE_NAME = 'site-cache-v1';
+var urlsToCache = [
+  '/',
+  '/index.html',
+  '/model.onnx
+];
 
-self.addEventListener("install", (event) => {
+self.addEventListener('install', function(event) {
+  // 安装步骤
   event.waitUntil(
-    addResourcesToCache([
-      "/",
-      "/index.html",
-     "/model.onnx,
-    ]),
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
   );
 });
-const putInCache = async (request, response) => {
-  const cache = await caches.open("v1");
-  await cache.put(request, response);
-};
 
-const cacheFirst = async (request) => {
-  const responseFromCache = await caches.match(request);
-  if (responseFromCache) {
-    return responseFromCache;
-  }
-  const responseFromNetwork = await fetch(request);
-  putInCache(request, responseFromNetwork.clone());
-  return responseFromNetwork;
-};
-
-self.addEventListener("fetch", (event) => {
-  event.respondWith(cacheFirst(event.request));
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        // 缓存命中，返回缓存的响应。
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      }
+    )
+  );
 });
 
 
